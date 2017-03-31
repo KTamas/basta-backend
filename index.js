@@ -11,14 +11,11 @@ const loadStopData = (stopId) => {
 };
 
 app.get('/getNearbyStops', function (req, res) {
-    //Lat: 47.515318099999995, Lon: 19.0529387
     const coords = {
         lat: req.query.lat,
         lon: req.query.lon
     };
-
     const dt = req.query.dt;
-
     res.send(helpers.getNearbyStopsGrouped(coords, dt));
 });
 
@@ -41,17 +38,6 @@ app.get('/getDeparturesForStop/:name', function (req, res) {
             departures: []
         };
 
-        // [{
-        //     "stopId": "BKK_008455",
-        //     "stopName": "Jászai Mari tér",
-        //     "direction": "Közvágóhíd H",
-        //     "departures": [{
-        //         "comesIn": 4,
-        //         "tripHeadSign": "Közvágóhíd H",
-        //         "vehicleName": "2",
-        //         "backgroundColor": "FFD800",
-        //         "color": "000000"
-        //     },
         allData.forEach(departureItem => {
             departureItem.departures.forEach(d => {
                 finalData.departures.push({
