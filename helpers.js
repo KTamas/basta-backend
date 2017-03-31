@@ -1,5 +1,5 @@
-import {stops} from './stops';
-import _ from 'lodash';
+const stops = require('./stops');
+const _ = require('lodash');
 
 // http://stackoverflow.com/a/21623256/6541
 const calculateDistanceInKm = function (lat1, lon1, lat2, lon2) {
@@ -24,7 +24,9 @@ const getNearbyStops = (location, distanceThreshold) => {
     return distances.filter(d => d.parent !== '').filter(d => d.distance < distanceThreshold).sort((a, b) => a.distance - b.distance);
 };
 
-export const getNearbyStopsGrouped = (location, distanceThreshold) => {
+var exports = module.exports = {};
+
+exports.getNearbyStopsGrouped = (location, distanceThreshold) => {
     const nearbyStops = getNearbyStops(location, distanceThreshold);
     return  _(nearbyStops)
         .groupBy(x => x.name.replace(/ \[.+?\]/g, '').replace(/ M \(.+?\)/g, '').replace(/ M$/, ''))
@@ -35,5 +37,5 @@ export const getNearbyStopsGrouped = (location, distanceThreshold) => {
             tmp.name = item[0];
             tmp.departures = item[1];
             return tmp;
-        });
+    });
 };
