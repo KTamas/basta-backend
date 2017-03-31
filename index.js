@@ -10,7 +10,7 @@ const loadStopData = (stopId) => {
     return fetch(bkkUrl + stopId).then(res => res.json());
 };
 
-app.get('/nearbyStops', function (req, res) {
+app.get('/getNearbyStops', function (req, res) {
     //Lat: 47.515318099999995, Lon: 19.0529387
     const coords = {
         lat: req.query.lat,
@@ -22,8 +22,22 @@ app.get('/nearbyStops', function (req, res) {
     res.send(helpers.getNearbyStopsGrouped(coords, dt));
 });
 
-app.get('/:stopId', function (req, res) {
-    loadStopData(req.params.stopId).then(data => res.send(data));
+
+app.get('/getDeparturesForStop/:name', function (req, res) {
+    const stops = helpers.getStop(req.params.name);
+    let reqIds = [];
+    stops.forEach(stop => reqIds.push(loadStopData(stop.id)));
+    Promise.all(reqIds).then(results => {
+        const allData = [];
+        results.forEach(result => {
+            if (typeof result !== 'undefined') {
+                allData.push(helpers.processData(result));
+            }
+        });
+        return allData;
+    }).then(allData => {
+        res.send(JSON.stringify(allData));
+    });
 });
 
 app.listen(3000);

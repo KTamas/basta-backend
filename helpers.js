@@ -39,3 +39,55 @@ exports.getNearbyStopsGrouped = (location, distanceThreshold) => {
             return tmp;
     });
 };
+
+exports.getStop = (name) => {
+    return stops.filter(stop => stop.name.includes(name) && stop.parent !== '');
+};
+
+exports.processData = function (json) {
+    const entry = json.data.entry;
+    const references = json.data.references;
+    const trips = references.trips;
+    const routes = references.routes;
+    const stops = references.stops;
+
+    const stopId = entry.stopId;
+    const stopName = stops[stopId].name;
+    const stopTimes = entry.stopTimes;
+
+    if (stopTimes.length === 0) return;
+
+    const departures = [];
+
+    let direction = '';
+    stopTimes.forEach(stopTime => {
+        const whichTime = stopTime.arrivalTime || stopTime.departureTime || stopTime.predictedDepartureTime;
+        const comesIn = Math.ceil(((whichTime * 1000) - json.currentTime) / 1000 / 60);
+        if (comesIn < 0 || isNaN(comesIn)) return;
+        const tripId = stopTime.tripId;
+        const routeId = trips[tripId].routeId;
+        const tripHeadSign = trips[tripId].tripHeadsign;
+        const route = routes[routeId];
+        const vehicleName = route.shortName;
+        const backgroundColor = route.color;
+        const color = route.textColor;
+        departures.push({
+            comesIn,
+            tripHeadSign,
+            vehicleName,
+            backgroundColor,
+            color
+        });
+        direction = tripHeadSign;
+    });
+
+    // return new Promise(function(resolve, reject) {
+    //     resolve([{
+    //         stopId,
+    //         stopName,
+    //         direction,
+    //         departures
+    //     }]);
+    // });
+    return {stopId, stopName, direction, departures};
+}
