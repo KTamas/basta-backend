@@ -36,7 +36,39 @@ app.get('/getDeparturesForStop/:name', function (req, res) {
         });
         return allData;
     }).then(allData => {
-        res.send(JSON.stringify(allData));
+        let finalData = {
+            stopName: req.params.name,
+            departures: []
+        };
+
+        // [{
+        //     "stopId": "BKK_008455",
+        //     "stopName": "Jászai Mari tér",
+        //     "direction": "Közvágóhíd H",
+        //     "departures": [{
+        //         "comesIn": 4,
+        //         "tripHeadSign": "Közvágóhíd H",
+        //         "vehicleName": "2",
+        //         "backgroundColor": "FFD800",
+        //         "color": "000000"
+        //     },
+        allData.forEach(departureItem => {
+            departureItem.departures.forEach(d => {
+                finalData.departures.push({
+                    direction: departureItem.direction,
+                    comesIn: d.comesIn,
+                    tripHeadSign: d.tripHeadSign,
+                    vehicleName: d.vehicleName,
+                    backgroundColor: d.backgroundColor,
+                    color: d.color
+                });
+            });
+        });
+
+        finalData.departures.sort((a, b) => a.comesIn - b.comesIn);
+        return finalData;
+    }).then(finalData => {
+        res.send(JSON.stringify(finalData));
     });
 });
 
