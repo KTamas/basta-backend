@@ -10,17 +10,26 @@ const loadStopData = (stopId) => {
     return fetch(bkkUrl + stopId).then(res => res.json());
 };
 
-app.get('/getNearbyStops', function (req, res) {
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.get('/getNearbyStops', function (req, res, next) {
     const coords = {
         lat: req.query.lat,
         lon: req.query.lon
     };
     const dt = req.query.dt;
-    res.send(helpers.getNearbyStopsGrouped(coords, dt));
+    const nearbyStops = helpers.getNearbyStopsGrouped(coords, dt).map((item, i) => { return {id: i, name: item.name}; });
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(nearbyStops));
+    res.end();
 });
 
 
-app.get('/getDeparturesForStop/:name', function (req, res) {
+app.get('/getDeparturesForStop/:name', function (req, res, next) {
     const stops = helpers.getStop(req.params.name);
     let reqIds = [];
     stops.forEach(stop => reqIds.push(loadStopData(stop.id)));
@@ -54,7 +63,9 @@ app.get('/getDeparturesForStop/:name', function (req, res) {
         finalData.departures.sort((a, b) => a.comesIn - b.comesIn);
         return finalData;
     }).then(finalData => {
+        res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(finalData));
+        res.end();
     });
 });
 
