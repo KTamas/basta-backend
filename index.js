@@ -1,8 +1,8 @@
-var express = require('express');
-var app = express();
-var stops = require('./stops');
-var fetch = require('node-fetch');
-var helpers = require('./helpers');
+const express = require('express');
+const app = express();
+const stops = require('./stops');
+const fetch = require('node-fetch');
+const helpers = require('./helpers');
 
 const bkkUrl = 'http://futar.bkk.hu/bkk-utvonaltervezo-api/ws/otp/api/where/arrivals-and-departures-for-stop.json?includeReferences=agencies,routes,trips,stops&minutesBefore=1&minutesAfter=30&key=bkk-web&version=3&appVersion=2.2.7-20170324232341&stopId=BKK_';
 
