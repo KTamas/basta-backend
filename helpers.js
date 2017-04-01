@@ -81,13 +81,5 @@ exports.processData = function (json) {
         direction = tripHeadSign;
     });
 
-    // return new Promise(function(resolve, reject) {
-    //     resolve([{
-    //         stopId,
-    //         stopName,
-    //         direction,
-    //         departures
-    //     }]);
-    // });
     return {stopId, stopName, direction, departures};
 }
